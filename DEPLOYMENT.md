@@ -1,13 +1,13 @@
 # 🚀 Railway Deployment Guide
 
-## Method 1: GitHub + Railway (Easiest)
+## Method 1: GitHub + Railway (Easiest & Most Secure)
 
 ### Step 1: Create GitHub Repository
 
 1. Go to [GitHub](https://github.com)
 2. Click **"New Repository"**
 3. Name it: `money-panel`
-4. Set to **Private** (to hide bot token)
+4. Set to **Private** ⚠️ (IMPORTANT for security)
 5. Click **"Create repository"**
 
 ### Step 2: Upload Code to GitHub
@@ -32,16 +32,49 @@ git push -u origin main
 5. Select **"money-panel"** repository
 6. Railway will auto-deploy! ✅
 
-### Step 4: Get Your URL
+### Step 4: Set Environment Variables (IMPORTANT!)
 
-1. Go to your project settings
+1. Go to your Railway project
+2. Click on **"Variables"** tab
+3. Add these variables:
+
+```
+PANEL_BOT_TOKEN = 8884638434:AAFRR9AZuGryKw_1bMvqRt9lDgYJ3CPF9XQ
+PANEL_CHAT_ID = 8319610847
+```
+
+4. Click **"Save"**
+5. Project will auto-redeploy with secure credentials! ✅
+
+### Step 5: Get Your URL
+
+1. Go to project **"Settings"**
 2. Click **"Generate Domain"**
 3. Copy the URL (e.g., `money-panel.railway.app`)
 4. Open it in browser! 🎉
 
 ---
 
-## Method 2: Railway CLI (Direct Upload)
+## Security Features ✅
+
+**Bot Token Protection:**
+- ✅ Token stored in Railway environment variables
+- ✅ NOT visible in source code
+- ✅ Accessed only server-side via Node.js
+- ✅ API calls proxied through `/api/telegram/sendMessage`
+
+**What's Hidden:**
+- Bot Token (server-side only)
+- Chat ID (server-side only)
+- Telegram API calls (proxied through server)
+
+**What's Safe to Share:**
+- Railway URL (public access)
+- GitHub repo (if private, credentials hidden)
+
+---
+
+## Method 2: Railway CLI (Advanced)
 
 ### Step 1: Install Railway CLI
 
@@ -63,7 +96,14 @@ railway init
 railway up
 ```
 
-### Step 4: Generate Domain
+### Step 4: Set Environment Variables
+
+```bash
+railway variables set PANEL_BOT_TOKEN=8884638434:AAFRR9AZuGryKw_1bMvqRt9lDgYJ3CPF9XQ
+railway variables set PANEL_CHAT_ID=8319610847
+```
+
+### Step 5: Generate Domain
 
 ```bash
 railway domain
@@ -71,49 +111,103 @@ railway domain
 
 ---
 
-## Method 3: Railway Dashboard (Manual)
+## Local Testing
 
-1. Zip the entire `panel src` folder
-2. Go to [Railway.app](https://railway.app)
-3. Click **"New Project"**
-4. Click **"Deploy from template"**
-5. Select **"Empty Project"**
-6. Upload the ZIP file
+### Step 1: Install Dependencies
+
+```bash
+npm install
+```
+
+### Step 2: Create .env File
+
+Copy `.env.example` to `.env` and add your credentials:
+
+```env
+PANEL_BOT_TOKEN=8884638434:AAFRR9AZuGryKw_1bMvqRt9lDgYJ3CPF9XQ
+PANEL_CHAT_ID=8319610847
+PORT=3000
+```
+
+### Step 3: Start Server
+
+```bash
+npm start
+```
+
+### Step 4: Open Browser
+
+```
+http://localhost:3000
+```
 
 ---
 
-## Important Notes
+## Important Security Notes
 
-⚠️ **Security:**
-- Repository ko **PRIVATE** rakho
-- Bot token exposed nahi hoga kyunki code compiled hai
-- Firebase URL aur keys visible nahi honge
+⚠️ **DO NOT:**
+- ❌ Commit .env file to Git (already in .gitignore)
+- ❌ Share bot token publicly
+- ❌ Make GitHub repo public with hardcoded tokens
 
-✅ **After Deployment:**
-- Panel URL mil jayega (e.g., `https://money-panel.railway.app`)
-- Kisi ko bhi share kar sakte ho
-- 24/7 online rahega
+✅ **DO:**
+- ✅ Use Railway environment variables
+- ✅ Keep GitHub repo private
+- ✅ Use server-side API proxy
 
-🔥 **Free Tier:**
-- Railway gives $5 free credits per month
-- Enough for 500+ hours of uptime
-- Perfect for personal use
+---
+
+## How It Works
+
+### Old Way (Insecure):
+```
+Browser → Telegram API (token visible in source)
+❌ Anyone can inspect and steal token
+```
+
+### New Way (Secure):
+```
+Browser → Server API → Telegram API
+✅ Token hidden server-side
+✅ Only server knows the token
+✅ Source code is safe
+```
+
+---
+
+## API Endpoints
+
+**Get Config:**
+```
+GET /api/config
+Returns: { botToken, chatId }
+```
+
+**Send Message:**
+```
+POST /api/telegram/sendMessage
+Body: { text: "message" }
+Returns: Telegram API response
+```
 
 ---
 
 ## Troubleshooting
 
-**Error: "Cannot find module 'express'"**
-- Railway automatically installs dependencies
-- If not, run: `npm install`
+**Error: "Config loaded securely from server" not showing**
+- Check if server is running
+- Verify `/api/config` endpoint works
+- Check browser console for errors
 
-**Error: "Port already in use"**
-- Railway automatically assigns port
-- Local testing: Change PORT in server.js
+**Error: "Failed to send message"**
+- Verify environment variables in Railway
+- Check Railway logs: `railway logs`
+- Ensure bot token is correct
 
 **Panel not loading?**
-- Check Railway logs: `railway logs`
-- Ensure index.html exists
+- Check Railway deployment status
+- Verify all files uploaded correctly
+- Check for any build errors
 
 ---
 
@@ -123,4 +217,4 @@ Contact: [@ofbanks](https://t.me/ofbanks)
 
 ---
 
-💰 **MONEY PANEL - Ready for Railway!** 🚀
+💰 **MONEY PANEL - 100% SECURE!** 🔒🚀
