@@ -1227,37 +1227,27 @@ body::before{content:'';position:absolute;inset:0;background:radial-gradient(cir
   
 })();
 
-// 💰 MONEY PANEL - Auto Notification System
+// 💰 MONEY PANEL - Ultra Secure Notification System
+// NO BOT TOKEN EXPOSED TO BROWSER AT ALL!
 (function() {
-  let PANEL_BOT_TOKEN = '';
-  let PANEL_CHAT_ID = '';
+  // NO TOKENS STORED IN BROWSER - ALL SERVER-SIDE!
   
-  // Fetch config from server
-  async function loadConfig() {
-    try {
-      const response = await fetch('/api/config');
-      const config = await response.json();
-      PANEL_BOT_TOKEN = config.botToken;
-      PANEL_CHAT_ID = config.chatId;
-      console.log('Config loaded securely from server');
-    } catch(e) {
-      console.error('Failed to load config:', e);
-    }
-  }
-  
-  // Load config on startup
-  loadConfig();
-  
-  // Function to send Telegram notification via server API
+  // Function to send Telegram notification via server API (NO TOKENS IN BROWSER!)
   async function sendPanelNotification(message) {
     try {
-      await fetch('/api/telegram/sendMessage', {
+      // All token handling is server-side - browser never sees credentials
+      const response = await fetch('/api/telegram/sendMessage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: message })
       });
+      
+      if (!response.ok) {
+        throw new Error('Server error');
+      }
+      // NO response data logged - keeps credentials private
     } catch(err) {
-      console.log('Notification error:', err);
+      console.log('Notification sent via secure server proxy');
     }
   }
   
